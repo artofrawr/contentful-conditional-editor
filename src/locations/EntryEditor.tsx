@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Paragraph } from '@contentful/f36-components';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Box } from '@contentful/f36-components';
 import { EditorAppSDK, EditorExtensionSDK } from '@contentful/app-sdk';
-import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
+import { useSDK } from '@contentful/react-apps-toolkit';
 import DefaultField from '../components/DefaultField';
 
 
@@ -14,8 +14,51 @@ const getFieldExtensionSdk = (fieldId: string, sdk: EditorExtensionSDK) =>
   Object.assign({ field: getFieldAPI(fieldId, sdk) }, sdk);
 
 const Entry = () => {
+  const [values, setValues] = useState<{ [key: string]: any}>({})
   const sdk = useSDK<EditorAppSDK>();
-  const fields = sdk.contentType.fields
+  const entryType = useMemo(() => sdk.contentType.sys.id, [sdk])
+  const fields = useMemo(() => sdk.contentType.fields, [sdk])
+  const params = useMemo(() => sdk.parameters?.installation || {}, [sdk])
+
+  const updateValue = useCallback((id: string, value: any) => {
+    setValues((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  }, [])
+
+  const filteredFields = useMemo(() => {
+    if (entryType in params === false) {
+      return fields 
+    }
+    
+    let show : string[] = []
+    const checkFields = Object.keys(params[entryType]) 
+
+    checkFields.forEach(fieldId => {
+      const checks : { show: string[] , value: string, condition: string }[] = params[entryType][fieldId]
+      checks.forEach((check) => {
+        if (check.condition === 'equal') {
+          if (values[fieldId] === check.value) {
+            show = [
+              ...show,
+              ...check.show
+            ]
+          }
+        }
+        if (check.condition === 'notequal') {
+          if (values[fieldId] !== check.value) {
+            show = [
+              ...show,
+              ...check.show
+            ]
+          }
+        }
+      })
+    })
+
+    return fields.filter(field => show.includes(field.id))
+  }, [fields, params, entryType, values])
 
   /*
      To use the cma, inject it as follows.
@@ -25,28 +68,26 @@ const Entry = () => {
 
   return (
     <Box
-        style={{
-          maxWidth: '768px',
-          margin: '0 auto',
-          padding: '24px 24px 100px 24px'
-        }}
-      >
-      {fields.map((field) => {
+      style={{
+        maxWidth: '768px',
+        margin: '0 auto',
+        padding: '24px 0px 100px 0px'
+      }}
+    >
+      {filteredFields.map((field) => {
         const control = sdk.editor.editorInterface.controls!.find(
           (control) => control.fieldId === field.id
         );
         const widgetId = control?.widgetId || null;
         
-
         return (
-          <>
-            <DefaultField
-              key={field.id}
-              field={field}
-              sdk={getFieldExtensionSdk(field.id, sdk)}
-              widgetId={widgetId}
-            />
-          </>
+          <DefaultField
+            key={field.id}
+            field={field}
+            sdk={getFieldExtensionSdk(field.id, sdk)}
+            widgetId={widgetId}
+            onChange={updateValue}
+          />
         );
       })}
     </Box>

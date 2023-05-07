@@ -1,8 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { ConfigAppSDK } from '@contentful/app-sdk';
-import { Heading, Form, Paragraph, Flex } from '@contentful/f36-components';
+import { Heading, Form, Paragraph, Flex, Button, FormControl } from '@contentful/f36-components';
 import { css } from 'emotion';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
+import { Textarea } from '@contentful/f36-components';
 
 export interface AppInstallationParameters {}
 
@@ -60,7 +61,19 @@ const ConfigScreen = () => {
     <Flex flexDirection="column" className={css({ margin: '80px', maxWidth: '800px' })}>
       <Form>
         <Heading>App Config</Heading>
-        <Paragraph>Welcome to your contentful app. This is your config page.</Paragraph>
+        
+        <FormControl>
+          <FormControl.Label>Editor Config</FormControl.Label>
+          <Textarea
+            value={JSON.stringify(parameters, null, 2)}
+            placeholder="{}"
+            onChange={(e) => setParameters(JSON.parse(e.target.value || "{}"))}
+            rows={10}
+          />
+          <FormControl.HelpText>
+            Copy and paste the editor JSON config.
+          </FormControl.HelpText>
+        </FormControl>
       </Form>
     </Flex>
   );
