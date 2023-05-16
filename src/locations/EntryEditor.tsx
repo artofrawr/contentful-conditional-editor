@@ -55,7 +55,7 @@ const Entry = () => {
                 ]
               }
               if (check.hide) {
-                show = show.filter(field => check.hide?.includes(field))
+                show = show.filter(field => !check.hide?.includes(field))
               }
             }
           }
@@ -68,7 +68,7 @@ const Entry = () => {
                 ]
               }
               if (check.hide) {
-                show = show.filter(field => check.hide?.includes(field))
+                show = show.filter(field => !check.hide?.includes(field))
               }
             }
           }
