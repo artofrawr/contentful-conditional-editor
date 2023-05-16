@@ -36,9 +36,11 @@ const Entry = () => {
     const checkFields = Object.keys(params[entryType]) 
 
     checkFields.forEach(fieldId => {
+      console.log(`checks for: ${fieldId}`)
       const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
       // determine which fields to show
       checks.forEach((check) => {
+        console.log(` - ${check.condition} ${check.value} hide: ${JSON.stringify(check.hide ||[])} show: ${JSON.stringify(check.show ||[])}`)
         if (check.condition === 'equal') {
           if (values[fieldId] === check.value) {
             if (check.show) {
