@@ -35,10 +35,11 @@ const Entry = () => {
     let show : string[] = []
 
     const groups = params[entryType]
-
+    console.log('groups', groups)
     groups.forEach((group: { [key: string]: any}) => {
       const checkFields = Object.keys(group)
-      
+      console.log('checkFields', checkFields)
+
       checkFields.forEach(fieldId => {
         console.log(`checks for: ${fieldId}`)
         const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
