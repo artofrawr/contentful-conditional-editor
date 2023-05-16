@@ -42,7 +42,7 @@ const Entry = () => {
 
       checkFields.forEach(fieldId => {
         console.log(`checks for: ${fieldId}`)
-        const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
+        const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = group[fieldId]
         // determine which fields to show
         checks.forEach((check) => {
           console.log(` - ${check.condition} ${check.value} hide: ${JSON.stringify(check.hide ||[])} show: ${JSON.stringify(check.show ||[])}`)
