@@ -33,42 +33,48 @@ const Entry = () => {
     }
     
     let show : string[] = []
-    const checkFields = Object.keys(params[entryType]) 
 
-    checkFields.forEach(fieldId => {
-      console.log(`checks for: ${fieldId}`)
-      const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
-      // determine which fields to show
-      checks.forEach((check) => {
-        console.log(` - ${check.condition} ${check.value} hide: ${JSON.stringify(check.hide ||[])} show: ${JSON.stringify(check.show ||[])}`)
-        if (check.condition === 'equal') {
-          if (values[fieldId] === check.value) {
-            if (check.show) {
-              show = [
-                ...show,
-                ...check.show
-              ]
-            }
-            if (check.hide) {
-              show = show.filter(field => check.hide?.includes(field))
-            }
-          }
-        }
-        if (check.condition === 'notequal') {
-          if (values[fieldId] !== check.value) {
-            if (check.show) {
-              show = [
-                ...show,
-                ...check.show
-              ]
-            }
-            if (check.hide) {
-              show = show.filter(field => check.hide?.includes(field))
+    const groups = params[entryType]
+
+    groups.forEach((group: { [key: string]: any}) => {
+      const checkFields = Object.keys(group)
+      
+      checkFields.forEach(fieldId => {
+        console.log(`checks for: ${fieldId}`)
+        const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
+        // determine which fields to show
+        checks.forEach((check) => {
+          console.log(` - ${check.condition} ${check.value} hide: ${JSON.stringify(check.hide ||[])} show: ${JSON.stringify(check.show ||[])}`)
+          if (check.condition === 'equal') {
+            if (values[fieldId] === check.value) {
+              if (check.show) {
+                show = [
+                  ...show,
+                  ...check.show
+                ]
+              }
+              if (check.hide) {
+                show = show.filter(field => check.hide?.includes(field))
+              }
             }
           }
-        }
+          if (check.condition === 'notequal') {
+            if (values[fieldId] !== check.value) {
+              if (check.show) {
+                show = [
+                  ...show,
+                  ...check.show
+                ]
+              }
+              if (check.hide) {
+                show = show.filter(field => check.hide?.includes(field))
+              }
+            }
+          }
+        })
       })
     })
+
 
     return fields.filter(field => show.includes(field.id))
   }, [fields, params, entryType, values])
