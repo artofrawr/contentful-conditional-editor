@@ -36,22 +36,33 @@ const Entry = () => {
     const checkFields = Object.keys(params[entryType]) 
 
     checkFields.forEach(fieldId => {
-      const checks : { show: string[] , value: string, condition: string }[] = params[entryType][fieldId]
+      const checks : { show?: string[], hide?: string[], value: string, condition: string }[] = params[entryType][fieldId]
+      // determine which fields to show
       checks.forEach((check) => {
         if (check.condition === 'equal') {
           if (values[fieldId] === check.value) {
-            show = [
-              ...show,
-              ...check.show
-            ]
+            if (check.show) {
+              show = [
+                ...show,
+                ...check.show
+              ]
+            }
+            if (check.hide) {
+              show = show.filter(field => check.hide?.includes(field))
+            }
           }
         }
         if (check.condition === 'notequal') {
           if (values[fieldId] !== check.value) {
-            show = [
-              ...show,
-              ...check.show
-            ]
+            if (check.show) {
+              show = [
+                ...show,
+                ...check.show
+              ]
+            }
+            if (check.hide) {
+              show = show.filter(field => check.hide?.includes(field))
+            }
           }
         }
       })
